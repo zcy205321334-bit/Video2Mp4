@@ -18,9 +18,8 @@
 
 </div>
 
-> **v0.1.0 is out** — [**download Video2Mp4.exe**](https://github.com/zcy205321334-bit/Video2Mp4/releases/latest) and you're good to go.
-> **Install FFmpeg first** (see [Install](#-install)) — without it the Start button stays greyed out.
-> Source code (`src/`) follows shortly; star or watch to get notified.
+> **Source is now public, v0.1.0 is downloadable.** Grab [**Video2Mp4.exe**](https://github.com/zcy205321334-bit/Video2Mp4/releases/latest) or [build it yourself](#-build).
+> FFmpeg is required beforehand (see [Install](#-install)); without it the Start button stays greyed out.
 
 ---
 
@@ -151,15 +150,26 @@ A summary line at the bottom reports `Done: N succeeded, M failed`. Expand the l
 
 ## 🔨 Build
 
-Once the source is public (see [roadmap](#-roadmap)) — a placeholder for now:
+The source lives right in this repository.
 
 ```bash
-uv venv
-uv sync --extra dev
-scripts\build.cmd
+git clone https://github.com/zcy205321334-bit/Video2Mp4.git
+cd Video2Mp4
+pip install -r requirements.txt
+pip install pyinstaller
+pyinstaller Video2Mp4.spec
 ```
 
-Expected artifact: `output\dist\Video2Mp4.exe`.
+The artifact lands in `dist\Video2Mp4.exe`.
+
+Six tests ship with the repo. The two most useful ones:
+
+```bash
+PYTHONPATH=. python tests/acceptance_theme.py
+PYTHONPATH=. python tests/acceptance_smoke.py
+```
+
+The first checks theme colors and contrast ratios; the second performs real transcodes and needs FFmpeg on the machine.
 
 ---
 
@@ -173,7 +183,7 @@ Expected artifact: `output\dist\Video2Mp4.exe`.
 - [x] Live system theme following
 - [x] High-DPI awareness
 - [x] **First release (with the exe)** — v0.1.0
-- [ ] **Publish the source code**
+- [x] **Publish the source code**
 - [ ] Batch queue
 - [ ] Pause / resume (only cancel today)
 

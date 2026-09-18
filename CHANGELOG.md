@@ -4,10 +4,21 @@
 
 ## [未发布]
 
-- 公开源码（`src/`）
 - 界面截图与演示动图
 - 批量队列
 - 暂停 / 继续（当前只有取消）
+
+## [0.2.0] — 2026-09-18
+
+### 新增
+
+- **公开源码**：`mov2mp4.py`（主程序 GUI）、`core.py`（转码核心）、`theme.py`（主题）
+- **六个测试**：`acceptance_smoke`（33 项验收）、`acceptance_theme`（19 项）、四个回归测试
+- **构建配置**：`Video2Mp4.spec`（PyInstaller）、`assets/Video2Mp4.manifest`（DPI PerMonitorV2）、`requirements.txt`
+
+### 说明
+
+- 源码由开发会话记录重放恢复，经语法校验（9/9）、自带验收测试（smoke 33/34，唯一未过项为性能阈值、theme 19/19）、与已发布 exe 的字符串交叉验证（关键符号 21/21）
 
 ## [0.1.0] — 2026-09-18
 
