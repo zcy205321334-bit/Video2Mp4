@@ -1,0 +1,25 @@
+# 默认：由 git 自动判断文本，检出时统一用 LF
+* text=auto eol=lf
+
+# 源码与文档
+*.py    text eol=lf
+*.md    text eol=lf
+*.json  text eol=lf
+*.toml  text eol=lf
+*.yml   text eol=lf
+*.yaml  text eol=lf
+
+# Windows 批处理必须 CRLF，否则部分解析器会出错
+*.cmd   text eol=crlf
+*.bat   text eol=crlf
+
+# 二进制
+*.exe   binary
+*.dll   binary
+*.pyd   binary
+*.ico   binary
+*.png   binary
+*.jpg   binary
+*.jpeg  binary
+*.gif   binary
+*.mp4   binary
