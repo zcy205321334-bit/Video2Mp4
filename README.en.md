@@ -39,6 +39,10 @@
 
 ## 🎬 What it does
 
+<p align="center">
+  <img src="img/interface.png" width="780" alt="Video2Mp4 main window"/>
+</p>
+
 ### Four conversion modes
 
 This is the heart of it. Picking the wrong mode is the #1 beginner mistake, so each one spells out when to use it:
