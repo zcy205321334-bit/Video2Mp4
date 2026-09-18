@@ -1,0 +1,35 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.egg-info/
+.eggs/
+dist/
+build/
+.pytest_cache/
+.mypy_cache/
+
+# Virtualenv
+.venv/
+venv/
+env/
+
+# IDE / OS
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
+*.swp
+
+# Project build artifacts
+output/
+*.spec.bak
+
+# Local config
+config.local.json
+ffmpeg_path.local
+
+# 本地探测脚本残留
+_entries.txt
+_strings.txt
+_probe_*.py
