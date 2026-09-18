@@ -18,8 +18,9 @@
 
 </div>
 
-> **Status**: this repository is currently a **front page** — README, license and issue templates are in place;
-> **source code and binaries are coming next**. Star or watch to get notified.
+> **v0.1.0 is out** — [**download Video2Mp4.exe**](https://github.com/zcy205321334-bit/Video2Mp4/releases/latest) and you're good to go.
+> **Install FFmpeg first** (see [Install](#-install)) — without it the Start button stays greyed out.
+> Source code (`src/`) follows shortly; star or watch to get notified.
 
 ---
 
@@ -99,11 +100,18 @@ ffprobe -version
 
 > ⚠️ PATH changes only apply to **new** terminals (and a restarted app). This is the most common one-time snag.
 
-### Step 2 — Get Video2Mp4.exe
+### Step 2 — Download Video2Mp4.exe
 
-Download from [Releases](https://github.com/zcy205321334-bit/Video2Mp4/releases) and double-click.
+Grab the latest from [**Releases**](https://github.com/zcy205321334-bit/Video2Mp4/releases/latest) and double-click it.
 
-**No release published yet** — binaries and source are coming together (see [roadmap](#-roadmap)).
+Single binary, no registry writes, no services. Current version: **v0.1.0** (~10.87 MB, Windows 10/11 x64).
+
+> 💡 Verify the hash:
+> `701a86b5beb5b5afb121c0adf0d61f74fd1bd4d2737ff2146260874d1dbe5c54`
+
+```powershell
+Get-FileHash .\Video2Mp4.exe -Algorithm SHA256
+```
 
 ---
 
@@ -164,8 +172,8 @@ Expected artifact: `output\dist\Video2Mp4.exe`.
 - [x] Drag & drop + folder recursion
 - [x] Live system theme following
 - [x] High-DPI awareness
+- [x] **First release (with the exe)** — v0.1.0
 - [ ] **Publish the source code**
-- [ ] **First release (with the exe)**
 - [ ] Batch queue
 - [ ] Pause / resume (only cancel today)
 

@@ -18,8 +18,9 @@
 
 </div>
 
-> **当前状态**：这个仓库目前是**门面页** —— README、许可证、Issue 模板都已经就位，**源码和可执行文件随后补上**。
-> 想第一时间拿到，点个 ⭐ 或 Watch 就行。
+> **v0.1.0 已发布** —— [**下载 Video2Mp4.exe**](https://github.com/zcy205321334-bit/Video2Mp4/releases/latest) 就能用。
+> **运行前请先装 FFmpeg**（见[安装](#-安装)，不装的话开始按钮是灰的）。
+> 源码（`src/`）随后公开，点 ⭐ 或 Watch 可收到通知。
 
 ---
 
@@ -100,11 +101,18 @@ ffprobe -version
 
 > ⚠️ 加完 PATH 必须**新开终端**（或重启程序）才生效，这是最常见的一次性卡点。
 
-### 第 2 步：拿到 Video2Mp4.exe
+### 第 2 步：下载 Video2Mp4.exe
 
-从 [Releases](https://github.com/zcy205321334-bit/Video2Mp4/releases) 下载，双击运行。
+从 [**Releases**](https://github.com/zcy205321334-bit/Video2Mp4/releases/latest) 下载最新版，双击运行。
 
-**当前 Release 尚未发布** —— 可执行文件与源码会一起补上（见[路线图](#-路线图)）。
+单文件、不写注册表、不装服务。当前版本 **v0.1.0**（约 10.87 MB，Windows 10/11 x64）。
+
+> 💡 建议核对哈希：
+> `701a86b5beb5b5afb121c0adf0d61f74fd1bd4d2737ff2146260874d1dbe5c54`
+
+```powershell
+Get-FileHash .\Video2Mp4.exe -Algorithm SHA256
+```
 
 ### （可选）建个开始菜单快捷方式
 
@@ -176,8 +184,8 @@ scripts\build.cmd
 - [x] 拖拽 + 文件夹递归
 - [x] 跟随系统主题实时切换
 - [x] 高 DPI 感知
+- [x] **发布首个 Release（含 exe）** → v0.1.0
 - [ ] **公开源码**
-- [ ] **发布首个 Release（含 exe）**
 - [ ] 批量队列
 - [ ] 暂停 / 继续（当前只有取消）
 
