@@ -33,3 +33,8 @@ ffmpeg_path.local
 _entries.txt
 _strings.txt
 _probe_*.py
+
+# 测试产物（验收脚本会写这些）
+tests/out/
+tests/screenshots/
+*acceptance_report.json

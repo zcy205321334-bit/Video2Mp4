@@ -1,0 +1,6 @@
+# Video2Mp4 运行时依赖
+# tkinter 是 Python 标准库自带，不需要装
+# ffmpeg / ffprobe 必须独立装好并加入 PATH
+#   下载：https://www.gyan.dev/ffmpeg/builds/  或  winget install Gyan.FFmpeg
+# tkinterdnd2：项目内做真拖拽支持（替代上一版的"假拖拽 import/pass"）
+tkinterdnd2-universal==1.7.3
