@@ -8,7 +8,9 @@
 - 批量队列
 - 暂停 / 继续（当前只有取消）
 
-### 修复（2026-09-22）
+## [0.2.1] — 2026-09-22
+
+### 修复
 
 - **中文 / 非 ASCII 路径整批探测失败**：中文 Windows 默认代码页（cp936）下，`probe_streams` 用 `text=True` 解码 ffprobe 的 UTF-8 输出会失败，`r.stdout` 变 `None` 后 `json.loads` 抛 `TypeError`，导致含中文文件名的视频全部显示「探测失败」。改为字节捕获 + 显式 UTF-8 解码，并把错误分级说清：退出码非零（附 stderr 摘要）/ 无输出 / 非法 UTF-8 / 非法 JSON，不再让 `NoneType` 掩盖真实原因
 - 其余 ffmpeg / ffprobe 子进程读取统一显式 UTF-8（编码器探测、硬件冒烟测试、进度读取），错误摘要用 `errors="replace"`

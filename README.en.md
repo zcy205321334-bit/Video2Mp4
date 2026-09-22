@@ -18,7 +18,7 @@
 
 </div>
 
-> **Source is now public, v0.1.0 is downloadable.** Grab [**Video2Mp4.exe**](https://github.com/zcy205321334-bit/Video2Mp4/releases/latest) or [build it yourself](#-build).
+> **Source is now public, v0.2.1 is downloadable.** Grab [**Video2Mp4.exe**](https://github.com/zcy205321334-bit/Video2Mp4/releases/latest) or [build it yourself](#-build).
 > FFmpeg is required beforehand (see [Install](#-install)); without it the Start button stays greyed out.
 
 ---
@@ -107,10 +107,10 @@ ffprobe -version
 
 Grab the latest from [**Releases**](https://github.com/zcy205321334-bit/Video2Mp4/releases/latest) and double-click it.
 
-Single binary, no registry writes, no services. Current version: **v0.1.0** (~10.87 MB, Windows 10/11 x64).
+Single binary, no registry writes, no services. Current version: **v0.2.1** (~11.09 MB, Windows 10/11 x64). This release fixes batch probe failures on Chinese filenames.
 
 > 💡 Verify the hash:
-> `701a86b5beb5b5afb121c0adf0d61f74fd1bd4d2737ff2146260874d1dbe5c54`
+> `5dd9b7ae8df0444f417c81ebaedaeb3e4d24812a4c1364fd0337509349711df1`
 
 ```powershell
 Get-FileHash .\Video2Mp4.exe -Algorithm SHA256
