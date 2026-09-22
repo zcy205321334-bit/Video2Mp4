@@ -115,8 +115,8 @@ def detect_encoders_static() -> dict:
         ffmpeg = get_ffmpeg()
         out = subprocess.run(
             [ffmpeg, "-hide_banner", "-encoders"],
-            capture_output=True, text=True, timeout=15,
-            creationflags=_NO_WINDOW,
+            capture_output=True, text=True, encoding="utf-8", errors="replace",
+            timeout=15, creationflags=_NO_WINDOW,
         ).stdout
     except Exception as e:
         return {"hevc": [], "h264": [], "error": str(e)}
@@ -173,8 +173,8 @@ def _hw_smoke_test(ffmpeg: str, encoder: str, codec: str) -> Tuple[bool, str]:
         "NUL" if sys.platform == "win32" else "/dev/null",
     ]
     try:
-        r = subprocess.run(cmd, capture_output=True, text=True, timeout=8,
-                           creationflags=_NO_WINDOW)
+        r = subprocess.run(cmd, capture_output=True, text=True, encoding="utf-8",
+                           errors="replace", timeout=8, creationflags=_NO_WINDOW)
         if r.returncode == 0:
             return True, ""
         # 抽 stderr 关键行
@@ -234,21 +234,50 @@ def pick_encoder(target: str, encoders: dict, prefer_hw: bool = True) -> Encoder
 
 
 def probe_streams(src: Path) -> dict:
-    """ffprobe JSON。接受 Path；不接受字符串且不忽略。"""
+    """ffprobe JSON。接受 Path；不接受字符串且不忽略。
+
+    解码策略：subprocess 以字节捕获，显式用 UTF-8 解码 stdout（ffprobe 输出恒为
+    UTF-8）。stdout 取 JSON、stderr 取错误原因，二者分离处理，避免默认 locale
+    （cp936）解码失败把 r.stdout 变成 None 后 json.loads 抛 TypeError 掩盖真实错误。
+    """
     if not isinstance(src, Path):
         src = Path(src)
     if not src.exists():
         raise FileNotFoundError(f"输入文件不存在：{src}")
     ffprobe = get_ffprobe()
-    r = subprocess.run(
-        [ffprobe, "-v", "quiet", "-print_format", "json",
-         "-show_format", "-show_streams", str(src.resolve())],
-        capture_output=True, text=True, timeout=30,
-        creationflags=_NO_WINDOW,
-    )
+    try:
+        r = subprocess.run(
+            [ffprobe, "-v", "error", "-print_format", "json",
+             "-show_format", "-show_streams", str(src.resolve())],
+            capture_output=True, timeout=30,
+            creationflags=_NO_WINDOW,
+        )
+    except subprocess.TimeoutExpired:
+        raise
+
+    # 退出码非零：真实失败原因在 stderr（stdout 的 JSON 可能为空/残缺）
     if r.returncode != 0:
-        raise RuntimeError(f"ffprobe 失败：{r.stderr.strip() or r.stdout.strip()}")
-    return json.loads(r.stdout)
+        err = (r.stderr or b"").decode("utf-8", "replace").strip()
+        raise RuntimeError(f"ffprobe 失败（exit {r.returncode}）：{err[:300]}")
+
+    raw = r.stdout or b""
+    if not raw.strip():
+        # 退出 0 但无 JSON：工具可能把错误写到了 stderr
+        err = (r.stderr or b"").decode("utf-8", "replace").strip()
+        raise RuntimeError(f"ffprobe 无输出（exit {r.returncode}）：{err[:300]}")
+
+    # 显式 UTF-8 解码；结构化数据不允许靠 errors=ignore 丢字节冒充成功
+    try:
+        text = raw.decode("utf-8")
+    except UnicodeDecodeError as e:
+        err = (r.stderr or b"").decode("utf-8", "replace").strip()
+        raise RuntimeError(f"ffprobe 输出不是合法 UTF-8（需 UTF-8）：{e}；stderr={err[:200]}")
+
+    try:
+        return json.loads(text)
+    except json.JSONDecodeError as e:
+        err = (r.stderr or b"").decode("utf-8", "replace").strip()
+        raise RuntimeError(f"ffprobe 输出不是合法 JSON：{e}；stderr={err[:200]}")
 
 
 # MP4 容器原生支持的视频 / 音频编码
@@ -488,6 +517,7 @@ def run_ffmpeg_with_progress(
             stdin=subprocess.DEVNULL,
             creationflags=_WIN_PROCESS_FLAGS,
             text=True,
+            encoding="utf-8",
             errors="replace",
         )
     except FileNotFoundError as e:

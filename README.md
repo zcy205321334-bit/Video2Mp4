@@ -170,14 +170,20 @@ pyinstaller Video2Mp4.spec
 
 产物在 `dist\Video2Mp4.exe`。
 
-仓库里还带了六个测试，改完代码想验收，跑这两个最省事。
+仓库里还带了八个测试，改完代码想验收，跑这两个最省事。
 
 ```bash
 PYTHONPATH=. python tests/acceptance_theme.py
 PYTHONPATH=. python tests/acceptance_smoke.py
 ```
 
-前者验主题配色和对比度，后者会做真实的转码，需要机器上有 FFmpeg。
+前者验主题配色和对比度，后者会做真实的转码，需要机器上有 FFmpeg。中文 / 非 ASCII 路径的探测回归在 `tests/test_probe_utf8.py` 和 `tests/test_probe_errorhandling.py`，跑法相同。
+
+想一步到位打个安装包（自动建 venv、打 tkinterdnd2 兼容补丁、PyInstaller 构建、算 SHA256）：
+
+```bash
+python tools/build.py
+```
 
 ---
 

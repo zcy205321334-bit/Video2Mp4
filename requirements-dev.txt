@@ -1,0 +1,7 @@
+# Video2Mp4 构建 / 自动化依赖（与运行时 requirements.txt 分开）
+# 运行时不需这些；仅打包与 GUI 自动化验收需要。
+# 注：本机 pip 索引对 Python 3.13 暂无可用的 Pillow/pyautogui 分发，
+# 故 GUI 自动化改用 pywinauto.mouse（坐标点击，无需 Pillow）+ PowerShell 截图 +
+# Set-Clipboard 粘贴路径，不依赖 pyautogui/Pillow。
+pyinstaller==6.22.3
+pywinauto==0.6.9

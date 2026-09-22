@@ -30,6 +30,14 @@ sys.path.insert(0, str(ROOT))
 
 import core  # noqa: E402
 
+# cp936 控制台下 print 的 ✓/✗(U+2713/U+2717) 会 UnicodeEncodeError，导致套件在首个用例就中止；
+# 仅让测试框架输出可打印，不影响被测产品行为。
+try:
+    sys.stdout.reconfigure(encoding="utf-8", errors="replace")
+    sys.stderr.reconfigure(encoding="utf-8", errors="replace")
+except Exception:  # pragma: no cover
+    pass
+
 
 # ────────────── 测试框架 ──────────────
 
@@ -61,8 +69,8 @@ def _ffmpeg_run(args: list[str], timeout: int = 60) -> tuple[int, str, str]:
     """同步跑 ffmpeg，返回 (rc, stdout, stderr)"""
     r = subprocess.run(
         [core.get_ffmpeg(), "-hide_banner"] + args,
-        capture_output=True, text=True, timeout=timeout,
-        creationflags=core._NO_WINDOW,
+        capture_output=True, text=True, encoding="utf-8", errors="replace",
+        timeout=timeout, creationflags=core._NO_WINDOW,
     )
     return r.returncode, r.stdout, r.stderr
 

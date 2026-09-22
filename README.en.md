@@ -166,14 +166,20 @@ pyinstaller Video2Mp4.spec
 
 The artifact lands in `dist\Video2Mp4.exe`.
 
-Six tests ship with the repo. The two most useful ones:
+Eight tests ship with the repo. The two most useful ones:
 
 ```bash
 PYTHONPATH=. python tests/acceptance_theme.py
 PYTHONPATH=. python tests/acceptance_smoke.py
 ```
 
-The first checks theme colors and contrast ratios; the second performs real transcodes and needs FFmpeg on the machine.
+The first checks theme colors and contrast ratios; the second performs real transcodes and needs FFmpeg on the machine. The Chinese / non-ASCII path probe regressions live in `tests/test_probe_utf8.py` and `tests/test_probe_errorhandling.py`, run the same way.
+
+One-shot build (fresh venv, tkinterdnd2 compatibility patch, PyInstaller, SHA256):
+
+```bash
+python tools/build.py
+```
 
 ---
 
