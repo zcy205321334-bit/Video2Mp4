@@ -13,7 +13,6 @@ mov2mp4.py - Video2Mp4 GUI（tkinter + ttk + tkinterdnd2）
 from __future__ import annotations
 
 import json
-import os
 import queue
 import sys
 import threading
@@ -105,37 +104,15 @@ class Worker(threading.Thread):
             self.log_q.put((src, "info", f"开始：{src.name}"))
 
             try:
-                # 决定输出目录
-                out_dir = self.out_dir if self.out_dir else src.parent
-                out_dir = Path(out_dir)
-                out_dir.mkdir(parents=True, exist_ok=True)
-
-                src_for_convert = src
                 r = core.convert_one(
-                    src=src_for_convert,
+                    src=src,
                     options=self.options,
                     encoders=self.encoders,
                     progress_cb=lambda p, s, i=idx: self.progress_q.put((i, "progress", p, s)),
                     is_cancelled=self._cancel_token.is_cancelled,
                     summary=summary,
+                    output_dir=self.out_dir,
                 )
-
-                # 如果指定了 out_dir，把产物移过去
-                if r.status == core.Status.SUCCESS and self.out_dir and r.dst.parent != out_dir:
-                    target = self._unique_dst(out_dir, r.dst.name)
-                    try:
-                        os.replace(r.dst, target)
-                        r.dst = target
-                    except OSError:
-                        try:
-                            import shutil
-                            shutil.copy2(r.dst, target)
-                            r.dst.unlink()
-                            r.dst = target
-                        except Exception as e:
-                            r = core.TaskResult(src=src, dst=r.dst,
-                                                status=core.Status.FAILED,
-                                                message=f"移动到 {out_dir} 失败：{e}")
 
                 # round2: log_q 载荷用 src 路径，不用 idx（解决索引错位）
                 self.log_q.put((src, r.status, r.message))
@@ -145,19 +122,6 @@ class Worker(threading.Thread):
                 continue
 
         self.done_q.put("done")
-
-    def _unique_dst(self, out_dir: Path, name: str) -> Path:
-        """避免覆盖，必要时加 (1)。"""
-        candidate = out_dir / name
-        if not candidate.exists():
-            return candidate
-        stem, suffix = candidate.stem, candidate.suffix
-        i = 1
-        while True:
-            candidate = out_dir / f"{stem} ({i}){suffix}"
-            if not candidate.exists():
-                return candidate
-            i += 1
 
 
 # ────────────── 文件列表行 ──────────────
