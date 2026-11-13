@@ -20,15 +20,14 @@ import mov2mp4
 
 def test_cancel_propagates_through_worker():
     """Worker.cancel() → convert_one.is_cancelled() 应在 2 秒内返回 True。"""
-    src = ROOT / "_test" / "sample.mov"
-    assert src.exists(), f"缺少测试样本：{src}"
+    src = ROOT / "sample.mov"  # convert_one 在本测试中是替身，不需要媒体文件
 
     # 用 stub 替换 convert_one：它在每次 is_cancelled() 时记录时间，
     # cancel 后应立即看到 True。
     poll_log = []
 
     def slow_one(src, options, encoders, progress_cb, is_cancelled, summary=None,
-                 audio_strategy_override=None, encoder_override=None):
+                 audio_strategy_override=None, encoder_override=None, *, output_dir=None):
         t0 = time.time()
         while time.time() - t0 < 5.0:
             if is_cancelled():

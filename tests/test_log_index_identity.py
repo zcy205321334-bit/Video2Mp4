@@ -27,7 +27,7 @@ _PATCH_MOD = sys.modules["core"]
 def _stub_convert_one_factory(results):
     iter_results = iter(results)
     def stub(src, options, encoders, progress_cb, is_cancelled, summary=None,
-             audio_strategy_override=None, encoder_override=None):
+             audio_strategy_override=None, encoder_override=None, *, output_dir=None):
         r = next(iter_results)
         progress_cb(1.0, "end")
         return r
