@@ -182,8 +182,8 @@ class App(TkinterDnD.Tk if HAS_DND else tk.Tk):
         _enable_dpi_awareness()  # 必须在 super().__init__() 完成布局之前
         super().__init__()
         self.title(APP_TITLE)
-        self.geometry("960x700")
-        self.minsize(820, 600)
+        self.geometry("960x780")
+        self.minsize(820, 720)
 
         # 状态
         self.theme = ThemeManager(self)
@@ -259,10 +259,12 @@ class App(TkinterDnD.Tk if HAS_DND else tk.Tk):
         # ── 主区（左右） ──
         body = ttk.Frame(self, padding=(16, 8))
         body.pack(fill="both", expand=True)
+        body.columnconfigure(0, weight=1)
+        body.rowconfigure(0, weight=1)
 
         # 左：文件区
         left = ttk.Frame(body)
-        left.pack(side="left", fill="both", expand=True, padx=(0, 8))
+        left.grid(row=0, column=0, sticky="nsew", padx=(0, 8))
 
         file_header = ttk.Frame(left)
         file_header.pack(fill="x", pady=(0, 4))
@@ -293,21 +295,20 @@ class App(TkinterDnD.Tk if HAS_DND else tk.Tk):
                                      style="Muted.TLabel", justify="center")
 
         # 右：设置
-        right = ttk.Frame(body, width=320)
-        right.pack(side="right", fill="y")
-        right.pack_propagate(False)
+        right = ttk.Frame(body)
+        right.grid(row=0, column=1, sticky="ns")
 
         # 设置卡片
-        settings = ttk.LabelFrame(right, text="转换模式", padding=12)
+        settings = ttk.LabelFrame(right, text="转换模式", padding=8)
         settings.pack(fill="x", pady=(0, 8))
 
         self.mode_var = tk.StringVar(value="auto")
         # 4 个 radio + 描述
         mode_descs = [
-            ("auto", "自动", "源能换容器就换容器，否则 H.265 编码"),
-            ("remux", "仅换容器", "不重编码，秒级完成，文件大小不变（无损）"),
-            ("h264", "H.264 兼容", "重编码为 H.264，所有设备都能播放"),
-            ("hevc", "H.265 压缩", "重编码为 H.265，文件更小（约 50%）"),
+            ("auto", "自动", "优先换容器，否则转 H.265"),
+            ("remux", "仅换容器", "保留原编码，重新封装为 MP4"),
+            ("h264", "H.264 兼容", "使用兼容性较广的 H.264"),
+            ("hevc", "H.265 压缩", "使用 H.265 控制视频体积"),
         ]
         for val, label, desc in mode_descs:
             rb_frame = ttk.Frame(settings)
@@ -319,18 +320,18 @@ class App(TkinterDnD.Tk if HAS_DND else tk.Tk):
                       justify="left").pack(side="left", padx=(8, 0), fill="x", expand=True)
 
         # 输出位置
-        out_frame = ttk.LabelFrame(right, text="输出位置", padding=12)
+        out_frame = ttk.LabelFrame(right, text="输出位置", padding=8)
         out_frame.pack(fill="x", pady=(0, 8))
         ttk.Label(out_frame, text="留空 = 与源同目录", style="Muted.TLabel").pack(anchor="w")
         path_row = ttk.Frame(out_frame)
         path_row.pack(fill="x", pady=(6, 0))
         self.outdir_var = tk.StringVar()
-        self.outdir_entry = ttk.Entry(path_row, textvariable=self.outdir_var)
+        self.outdir_entry = ttk.Entry(path_row, textvariable=self.outdir_var, width=14)
         self.outdir_entry.pack(side="left", fill="x", expand=True)
         ttk.Button(path_row, text="…", width=3, command=self._pick_outdir).pack(side="left", padx=(4, 0))
 
         # 高级折叠
-        adv_frame = ttk.LabelFrame(right, text="高级", padding=12)
+        adv_frame = ttk.LabelFrame(right, text="高级", padding=8)
         adv_frame.pack(fill="x", pady=(0, 8))
 
         ttk.Label(adv_frame, text="质量（CRF）").grid(row=0, column=0, sticky="w", pady=2)
@@ -354,7 +355,7 @@ class App(TkinterDnD.Tk if HAS_DND else tk.Tk):
 
         # ── 底部 ──
         bot = ttk.Frame(self, padding=(16, 4, 16, 12))
-        bot.pack(fill="x", side="bottom")
+        bot.pack(fill="x", side="bottom", before=body)
 
         # 进度条 + 计数
         prog_row = ttk.Frame(bot)
