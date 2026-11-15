@@ -36,6 +36,7 @@ import re
 import shutil
 import subprocess
 import sys
+import tempfile
 import threading
 import time
 from dataclasses import dataclass, field
@@ -665,7 +666,7 @@ def plan_output(src: Path, out_dir: Path, mode_tag: str, overwrite: bool = False
     """规划输出路径 + 临时路径。
     - 同名文件：自动加 (1) (2) …
     - 不覆盖已有文件（除非 overwrite=True）
-    - 临时文件 .partial.mp4；成功后原子 rename 为 .mp4
+    - 在输出目录中独占创建临时文件；成功后原子发布为 .mp4
     """
     out_dir = Path(out_dir)
     out_dir.mkdir(parents=True, exist_ok=True)
@@ -684,8 +685,9 @@ def plan_output(src: Path, out_dir: Path, mode_tag: str, overwrite: bool = False
                 break
             i += 1
 
-    tmp = candidate.with_suffix(".partial.mp4")
-    return candidate, tmp
+    fd, tmp = tempfile.mkstemp(prefix=".video2mp4-", suffix=".partial.mp4", dir=out_dir)
+    os.close(fd)
+    return candidate, Path(tmp)
 
 
 def atomic_publish(tmp: Path, final: Path) -> bool:
@@ -760,6 +762,8 @@ def convert_one(
     summary: Optional[StreamSummary] = None,
     audio_strategy_override: Optional[str] = None,
     encoder_override: Optional[EncoderInfo] = None,
+    *,
+    output_dir: Optional[Path] = None,
 ) -> TaskResult:
     """编排单个文件转换。返回 TaskResult（不抛异常给 UI，统一传状态）。"""
     from dataclasses import dataclass
@@ -806,21 +810,29 @@ def convert_one(
                               message=f"无可用 {actual_mode} 编码器：{e}")
 
     # 4. 规划输出
-    out_dir = src.parent  # 默认同目录
-    candidate, tmp = plan_output(src, out_dir, actual_mode, overwrite=options.overwrite)
+    out_dir = src.parent if output_dir is None else output_dir
+    try:
+        candidate, tmp = plan_output(src, out_dir, actual_mode, overwrite=options.overwrite)
+    except OSError as exc:
+        return TaskResult(src=src, dst=Path(), status=Status.FAILED,
+                          message=f"无法在输出目录创建文件：{exc}")
 
     # 5. 构造命令 + 执行
-    cmd = _build_ffmpeg_cmd(src, tmp, options, encoder, audio_strategy)
-    log_path = candidate.with_suffix(".partial.log")
-
+    log_path = tmp.with_suffix(".log")
     t0 = time.time()
-    rc, last_status = run_ffmpeg_with_progress(
-        cmd=cmd,
-        total_seconds=summary.duration,
-        progress_cb=progress_cb,
-        is_cancelled=is_cancelled,
-        log_path=log_path,
-    )
+    try:
+        cmd = _build_ffmpeg_cmd(src, tmp, options, encoder, audio_strategy)
+        rc, last_status = run_ffmpeg_with_progress(
+            cmd=cmd,
+            total_seconds=summary.duration,
+            progress_cb=progress_cb,
+            is_cancelled=is_cancelled,
+            log_path=log_path,
+        )
+    except (DependencyError, OSError) as exc:
+        _cleanup(tmp)
+        return TaskResult(src=src, dst=candidate, status=Status.FAILED,
+                          message=f"无法启动转换：{exc}", log_path=log_path)
     elapsed = time.time() - t0
 
     # 6. 取消分支
@@ -840,7 +852,7 @@ def convert_one(
 
     # 8. 校验 + 原子发布
     try:
-        probe = probe_streams(candidate if candidate.exists() else tmp)
+        probe = probe_streams(tmp)
         out_summary = summarize_streams(probe)
         if out_summary.duration > 0 and summary.duration > 0:
             # 时长偏差超过 5% 视为异常

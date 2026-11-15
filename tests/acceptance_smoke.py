@@ -126,7 +126,7 @@ def test_compat_remux(report: TestReport, work: Path):
     expected_dst = src.with_suffix(".mp4")
     report.case("输出文件存在", expected_dst.exists() and expected_dst.stat().st_size > 0,
                 f"{expected_dst.name} {expected_dst.stat().st_size if expected_dst.exists() else 0} bytes")
-    report.case("无 partial 残留", not expected_dst.with_name(expected_dst.stem + ".partial.mp4").exists())
+    report.case("无 partial 残留", not list(work.glob("*.partial.*")))
     report.case("源 SHA256 不变", _sha256(src) == _sha256(work / "compat.mov"))
 
 
@@ -261,6 +261,7 @@ def test_long_cancel(report: TestReport, work: Path):
     """长任务取消（3 秒内停止）"""
     print("\n[9] 长任务取消")
     src = work / "long.mov"
+    output_dir = work / "cancel_output"
     # 30 秒源文件，HEVC veryslow 应该跑几秒
     _make_video(src, codec="libx264", audio_codec="aac", duration=30, size="1280x720", rate=30)
 
@@ -274,11 +275,11 @@ def test_long_cancel(report: TestReport, work: Path):
 
     t0 = time.time()
     r = core.convert_one(src, core.ConvertOptions(mode="hevc", crf=28, preset="veryslow"),
-                         encs, lambda p, s: None, tk.is_cancelled)
+                         encs, lambda p, s: None, tk.is_cancelled, output_dir=output_dir)
     elapsed = time.time() - t0
     report.case("状态 cancelled", r.status == core.Status.CANCELLED, r.message)
     report.case("≤3 秒内停止", elapsed <= 3.0, f"{elapsed:.2f}s")
-    report.case("无 partial 残留", not list(work.glob("long_hevc.partial.*")))
+    report.case("无 partial 残留", output_dir.is_dir() and not list(output_dir.iterdir()))
 
 
 def test_two_rounds(report: TestReport, work: Path):

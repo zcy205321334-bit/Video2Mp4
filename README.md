@@ -18,7 +18,7 @@
 
 </div>
 
-> **源码已公开，v0.2.1 可直接下载**。要现成的就 [**拿走 Video2Mp4.exe**](https://github.com/zcy205321334-bit/Video2Mp4/releases/latest)，想自己打的往下看[构建](#-构建)。
+> **源码已公开，v0.2.2 可直接下载**。要现成的就 [**拿走 Video2Mp4.exe**](https://github.com/zcy205321334-bit/Video2Mp4/releases/latest)，想自己打的往下看[构建](#-构建)。
 > 运行前要装 FFmpeg，见[安装](#-安装)，不装的话开始按钮是灰的。
 
 ---
@@ -106,10 +106,10 @@ ffprobe -version
 
 ### 第 2 步，拿 Video2Mp4.exe
 
-去 [**Releases**](https://github.com/zcy205321334-bit/Video2Mp4/releases/latest) 下载最新版，双击就跑。单文件，不写注册表，不装服务。当前版本 **v0.2.1**，约 11.09 MB（Windows 10/11 x64）。这一版修好了**中文文件名视频整批「探测失败」**的老毛病。
+去 [**Releases**](https://github.com/zcy205321334-bit/Video2Mp4/releases/latest) 下载最新版，双击运行。当前版本 **v0.2.2**，约 12.12 MB（Windows 10/11 x64）。新版会直接写入指定输出目录，修复了默认窗口右侧设置被裁切的问题。
 
 > 💡 介意文件来路的话，对一下哈希。
-> `5dd9b7ae8df0444f417c81ebaedaeb3e4d24812a4c1364fd0337509349711df1`
+> `4522f53adbd79b39872f9f7bf0f3264f9dea22cd0d06317cc2f2993897c00861`
 
 ```powershell
 Get-FileHash .\Video2Mp4.exe -Algorithm SHA256
